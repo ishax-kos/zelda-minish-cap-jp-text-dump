@@ -3,7 +3,7 @@
 This is a text dump generator for the japanese verion of the minish cap!
 
 ## To Use
-as a command it should be `exe [game file] [text table offset]`
+To run it as a command it should be `exe [game file] [text table offset]`
 otherwise you can simply drag and drop the game onto the exe.
 
 ### Planned
