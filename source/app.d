@@ -2,7 +2,8 @@ import std.stdio;
 import std.conv;
 import std.format;
 import data;
-// import std.path;
+import std.path;
+import std.file;
 
 enum VERSION = [1, 2, 0];
 
@@ -12,15 +13,20 @@ void main(string[] args) {
     
     if (args.length >= 2) fName = args[1];
     if (args.length >= 3) start = args[2].parse!uint;
-    // outName = stripExtension(fname);
+    string outpath = args[0].dirName.buildPath("output");
+    if (!outpath.exists) mkdir(outpath);
 
-    parseFile(fName, start);
+    parseFile(
+        fName, start, 
+        outpath.buildPath(
+            fName.baseName~"_text_"~VERSION.format!"%(%s-%)"~".html"));
 }
 
-string parseFile(string fName, uint offset) {
+string parseFile(string fName, uint offset, string outpath) {
     File romFile = File(fName, "rb");
-    enum outname = "output/mcTextDump.html";
-    File outFile = File(outname, "wb");
+    File outFile = File(outpath, "wb");
+    if (!outpath.dirName.exists) mkdir(outpath.dirName);
+    // writeln(outpath);
 
 //\"color:white; background-color:black;\"
     outFile.writeln(
@@ -82,7 +88,7 @@ div.allEntries {
         }
     }
     
-    writeln("generated ", outname);
+    writeln("generated ", outpath);
     return "";
 }
 
