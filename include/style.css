@@ -1,0 +1,18 @@
+td.entry {
+    color:white;
+    background:#222222;
+    padding: 1pc;
+    border-radius: 10pt;
+}
+div.entry {
+    display: inline-block;
+    margin: 1pc;
+}
+div.allEntries {
+    inline-size: min-content;
+    white-space: nowrap;
+}
+p {
+    padding 0;
+    border 0;
+}
