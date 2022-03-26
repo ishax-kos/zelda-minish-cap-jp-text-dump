@@ -15,3 +15,5 @@ mc-dump-jp-test-*
 *.obj
 *.lst
 test.*
+output/
+exclude/

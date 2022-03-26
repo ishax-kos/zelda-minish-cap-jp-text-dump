@@ -9,7 +9,7 @@ enum VERSION = [1, 2, 0];
 void main(string[] args) {
     string fName = "raw/rom.gba";
     uint start = 0x9B1A30; //
-
+    
     if (args.length >= 2) fName = args[1];
     if (args.length >= 3) start = args[2].parse!uint;
     // outName = stripExtension(fname);
