@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+raw/
+/mc-dump-jp
+mc-dump-jp.so
+mc-dump-jp.dylib
+mc-dump-jp.dll
+mc-dump-jp.a
+mc-dump-jp.lib
+mc-dump-jp-test-*
+*.exe
+*.o
+*.obj
+*.lst
+test.*
