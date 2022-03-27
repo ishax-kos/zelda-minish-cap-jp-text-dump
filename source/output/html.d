@@ -1,9 +1,10 @@
 module output.html;
 
+
 string formatHTML(string str) {return str~",,,";}
 
 
-
+//+
 string parseFile(string inputPath, uint offset, string outPath) {
     MmFile romFile = MmFile(inputPath);
     File outFile = File(outPath, "wb");
@@ -14,6 +15,9 @@ string parseFile(string inputPath, uint offset, string outPath) {
     outFile.writeln(import("include/style.css"));
 
     romFile.seek(offset);
+
+    /++ Get the offset from the beginning of the table to 
+        the first subtable and read the data inbetween.+/
     uint[] tableTableOffsets = new uint[romFile.peek!uint/uint.sizeof];
     romFile.rawRead(tableTableOffsets);
 
@@ -39,7 +43,7 @@ string parseFile(string inputPath, uint offset, string outPath) {
             import std.algorithm;
             import std.array;
             romFile.seek(offset + ttoff + stoff);
-            dstring msg = romFile.parseString()
+            wstring msg = romFile.parseString()
                 .strip("\n 　")
                 .array()
                 .lineSplitter().join("<br>\n");
@@ -59,17 +63,3 @@ string parseFile(string inputPath, uint offset, string outPath) {
 }
 
 
-T pop(T)(File file) {
-    T[1] buffer;
-    file.rawRead(buffer);
-    return buffer[0];
-}
-
-
-T peek(T)(File file) {
-    T[1] buffer;
-    auto pos = file.tell();
-    file.rawRead(buffer);
-    file.seek(pos);
-    return buffer[0];
-}

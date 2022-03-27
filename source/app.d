@@ -1,9 +1,10 @@
 import std.mmfile;
 import std.conv;
 import std.format;
-import data;
 import std.path;
 import std.file;
+
+// import data;
 
 immutable dumpVersion = [1, 2, 0];
  
