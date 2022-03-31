@@ -1,14 +1,17 @@
-td.entry {
+.trMessage {
     color:white;
     background:#222222;
     padding: 1pc;
     border-radius: 10pt;
 }
-div.entry {
+div.trTable {
     display: inline-block;
     margin: 1pc;
 }
-div.allEntries {
+table.trTable {
+    max-width: 30pc;
+}
+#allTables {
     inline-size: min-content;
     white-space: nowrap;
 }
@@ -20,35 +23,35 @@ p {
 /** The first 4 appear in game, the 5th is
     in the debug messages, and the rest are 
     probably just undefined states. */
-.c0, .c8 {
-    /* color: white; */
-}
-.c1, .c9 {
-    color: #f54242;
-}
-.c2, .cA, .cE {
-    color: #3cc932;
-}
-.c3, .cB {
-    color: #4287f5;
-}
-.c4, .cC {
-    color: #000000;
-    background-color: #7F7F7F;
-}
-.c5, .cD, .cF {
-    color: #FFFFFF;
-    background-color: #444444;
-}
-.c6 {
-    color: #FFFFFF;
-    background-color: #7a231c;
-}
-.c7 {
-    color: #f54242;
-    background-color: #7a231c;
-}
-.cERROR {
-    color: #FFFFFF;
-    background-color: #FF0000;
-}
+    .c0, .c8 {
+        /* color: white; */
+    }
+    .c1, .c9 {
+        color: #f54242;
+    }
+    .c2, .cA, .cE {
+        color: #3cc932;
+    }
+    .c3, .cB {
+        color: #4287f5;
+    }
+    .c4, .cC {
+        color: #000000;
+        background-color: #7F7F7F;
+    }
+    .c5, .cD, .cF {
+        color: #FFFFFF;
+        background-color: #444444;
+    }
+    .c6 {
+        color: #FFFFFF;
+        background-color: #7a231c;
+    }
+    .c7 {
+        color: #f54242;
+        background-color: #7a231c;
+    }
+    .cERROR {
+        color: #FFFFFF;
+        background-color: #FF0000;
+    }

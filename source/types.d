@@ -1,8 +1,11 @@
 module types;
 
+import std.sumtype;
+public import std.sumtype: match;
 
 struct Table {
     string name; 
+    string description;
     uint number; 
     TextBox[] messages;
 }
@@ -27,6 +30,7 @@ struct ColoredMsg {
     ubyte palette;
     wstring text;
 }
+
 
 
 

@@ -1,6 +1,9 @@
 module data.jp;
 
 
+uint textAddress = 0x9B1A30;
+
+
 immutable wchar[] mapping1x2_Base = [
     /// Unmodified base charset & kana  
     '\0', '▶', '「', '」', '✕',  '“',  '・', '⇧', '⇩',  '⇦', '⇨', '♪',  '♥',  '&',  '゛', '゜',

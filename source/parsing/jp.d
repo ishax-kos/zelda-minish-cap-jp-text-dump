@@ -1,7 +1,7 @@
 module parsing.jp;
 
 import types;
-import data.jp;
+import data;
 
 import std.format;
 import std.mmfile;
@@ -12,6 +12,8 @@ enum OFFSET = 0x9B1A30;
 // enum MAX_TABLES = 256;
 enum MAX_ROWS = 256;
 enum MAX_LENGTH = 1024;
+
+// alias
 
 Table[] parseTables(MmFile romFile) {
     import std.range: iota;
@@ -30,6 +32,10 @@ Table[] parseTables(MmFile romFile) {
 
         Table table;
         
+        table.name = format!"Table %d"(tableNum);
+        if (tableNum < tableDescriptions.length)
+            table.description = tableDescriptions[tableNum];
+
         foreach (messageNum; 0..messageCount) {
             immutable stringOffset = romFile.take!uint(messageNum*4 + tableOffset) + tableOffset;
             table.messages ~= TextBox( 
@@ -89,7 +95,9 @@ ColoredMsg[] parseString(MmFile romFile, uint offset) {
                     addString ("❌▶");
                 else {
                     ubyte b2 = romFile[i++]; //3
-                    addString (format!"🔎(%s, %s)▶"w(b1, b2));
+                    addString (
+                        format!"🔎%d,%d▶"w(b1,b2)
+                    );
                 }
                 break;
 

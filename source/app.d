@@ -3,38 +3,46 @@ import std.conv;
 import std.format;
 import std.path;
 import std.file;
+import std.stdio: File;
+import std.encoding;
 
-// import data;
+import data: dumpVersion;
+import parsing;
+import output;
 
-immutable dumpVersion = [1, 2, 0];
  
 void main(string[] args) {
     string inputPath = "raw/rom.gba";
-    string outName = "mcTextDump"
-                        ~dumpVersion.format!"_v%(%s-%)" // add version to file name
-                        ~".html";
-    uint textAddress = 0x9B1A30;
+    string outName = "mcTextDump";
     
     if (args.length >= 2) {
         inputPath = args[1];
         outName = inputPath.baseName.stripExtension
-            ~"_text"
-            ~dumpVersion.format!"_v%(%s-%)"
-            ~".html";    
+            ~"_text"; 
     }
-    if (args.length >= 3) textAddress = args[2].parse!uint;
+
+    
+    
+    /// add version to file name
+    outName ~= dumpVersion~".html";
+
     string outPath = args[0].dirName.buildPath("output");
     if (!outPath.exists) mkdir(outPath);
 
 
     MmFile inputFile = new MmFile(inputPath);
 
-    write(
-        buildPath(outPath, outName),
-        inputFile
-            .parseStringJP()
+    File outFile = File(buildPath(outPath, outName), "wb");
+    
+    /// This is a "Byte order mark".
+    // outFile.rawWrite(bomTable[BOM.utf16le].sequence);
+    outFile.write(
+        parseTables(inputFile)
             .formatHTML()
+        // "output/aFile.html"
     );
+    // import data.jp;
+    // outFile.write();
 }
 
 
