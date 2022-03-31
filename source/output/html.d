@@ -13,39 +13,41 @@ import data;
 
 wstring formatHTML(Table[] structuredData) {
     Tag[] doc;
-    doc ~= 
+    doc ~= "html".tag(
         "head".tag(
             "style".tag(
                 import("style.css").to!wstring
             )
-        );
-
-    doc ~= "body".tag(
-        "p".tag(dumpVersion.to!wstring),
-        "div id=allTables".tag(
-            structuredData.map!(
-                (Table t) {
-                    uint i = 0;
-                    return "div class=trTable".tag(
-                        "h3".tag(t.name.to!wstring),
-                        "h4".tag(t.description.to!wstring),
-                        "table class=trTable".tag(
-                            t.messages.map!(
-                                (TextBox tb) => "tr".tag(
-                                    "td".tag(format!"%d"w(i++)),
-                                    "td class=trMessage".msgToTag(tb.text)
-                                )
-                            )//.array
-                        )
-                    );
-                }
-            )//.array
+        ),
+        "body".tag(
+            "p".tag(dumpVersion.to!wstring),
+            "div id=allTables".tag(
+                structuredData.map!(
+                    (Table t) {
+                        uint i = 0;
+                        return "div class=trTable".tag(
+                            "h3".tag(t.name.to!wstring),
+                            "h4".tag(t.description.to!wstring),
+                            "table class=trTable".tag(
+                                t.messages.map!(
+                                    (TextBox tb) => "tr".tag(
+                                        "td".tag(format!"%d"w(i++)),
+                                        "td class=trMessage".msgToTag(tb.text)
+                                    )
+                                        // : "tr".tag(`("tr".tag("td".tag(format!"%d <hr>"w(i++))))`w)
+                                )//.array11
+                            )
+                        );
+                    }
+                )//.array
+            )
         )
     );
     
     
 
-    return doc.map!(toStringHTML).array.join('\n');
+    return "<!DOCTYPE html>\n"w ~
+    doc.map!(toStringHTML).array.join('\n');
 }
 
 
@@ -64,10 +66,12 @@ wstring toStringHTML(Tag thisTag) {
             indent += 1; scope(exit) indent -= 1; 
             return a.match!(
                 (Tag t) => t.toStringHTML,
-                (wstring ws) => ws.lineSplitter.map!(a => ind~a).join('\n')
+                (wstring ws) => ws.lineSplitter.join("\n" ~ ind),
+                (Pre p) => "<pre>"~p.text~"</pre>"
+
             );
         }).join('\n');
-        outStr ~= "\n" ~ ind ~ format!"</%s>"w(tag);
+        outStr ~= "\n" ~ ind ~ format!"</%s>"w(tag.split[0]);
         return outStr;
     }
 }
@@ -101,7 +105,12 @@ Tag tag(T...)(string name, T mixedContents)
     return Tag(name, contents);
 }
 
-alias Contents_t = SumType!(Tag, wstring);
+alias Contents_t = SumType!(Tag, wstring, Pre);
+
+
+struct Pre {
+    wstring text;
+}
 
 
 string tagPalette(uint val) {
@@ -109,89 +118,27 @@ string tagPalette(uint val) {
     if (val < 16) return format!"c%X"(val);
     else return "cERROR";
 }
+
+
 Tag msgToTag(string tagName, ColoredMsg[] colorMsgArray) {
     import std.functional: compose;
     import std.uni: isWhite;
 
-    wstring brLines(ColoredMsg t) {
-        return t.text
-            .lineSplitter
-            .join("\n<br>"w);
-    }
+
+    if (colorMsgArray.length == 0) return tagName.split[0].tag(Pre("<hr>"w));
 
     wstring outmsg;
     foreach(colmsg; colorMsgArray) {
         if (colmsg.text == "") {}
         else if (colmsg.text.all!isWhite) {
-            outmsg ~= brLines(colmsg);
+            outmsg ~= colmsg.text;
         }
         else {
             outmsg ~= colmsg.palette.format!"<span class=c%X>"w();
-            outmsg ~= brLines(colmsg);
+            outmsg ~= colmsg.text;
             outmsg ~= "</span>"w;
         }
         
     }
-    return tag(tagName, outmsg.strip);
+    return tagName.tag(Pre(outmsg.strip));
 }
-
-
-/+
-string parseFile(string inputPath, uint offset, string outPath) {
-    MmFile romFile = MmFile(inputPath);
-    File outFile = File(outPath, "wb");
-    if (!outPath.dirName.exists) mkdir(outPath.dirName);
-    // writeln(outPath);
-
-//\"color:white; background-color:black;\"
-    outFile.writeln(import("include/style.css"));
-
-    romFile.seek(offset);
-
-    /++ Get the offset from the beginning of the table to 
-        the first subtable and read the data inbetween.+/
-    uint[] tableTableOffsets = new uint[romFile.peek!uint/uint.sizeof];
-    romFile.rawRead(tableTableOffsets);
-
-    outFile.writeln(format!"<p>version %(%s.%)</p>"(dumpVersion));
-    outFile.writeln("<div class=allEntries>");
-    scope(exit) outFile.writeln("</div>");
-
-    string[][] stringTable;
-    foreach (tableNum, uint ttoff; tableTableOffsets) {
-        romFile.seek(offset + ttoff);
-        uint[] stringTableOffsets = new uint[romFile.peek!uint/uint.sizeof];
-        romFile.rawRead(stringTableOffsets);
-
-
-        outFile.writeln("<div class=entry>");
-        scope(exit) outFile.writeln("</div>");
-        outFile.writefln("<h3>Table %s</h3>", tableNum);
-        outFile.writeln("<table class=entry>");
-        scope(exit) outFile.writeln("</table>");
-
-        foreach (rowNum, uint stoff; stringTableOffsets) {
-            import std.string;
-            import std.algorithm;
-            import std.array;
-            romFile.seek(offset + ttoff + stoff);
-            wstring msg = romFile.parseString()
-                .strip("\n 　")
-                .array()
-                .lineSplitter().join("<br>\n");
-            if (msg == "") {
-                //skip the line
-            }
-            else {
-                outFile.writefln("<tr><td>%s</td><td class=entry>", rowNum);
-                outFile.writeln(msg, "\n");
-                outFile.writeln("</td></tr>\n");
-            }
-        }
-    }
-    
-    writeln("generated ", outPath);
-    return "";
-}
-// +/
-

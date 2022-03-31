@@ -1,19 +1,27 @@
-.trMessage {
+td.trMessage {
+    max-width: 30pc;
     color:white;
     background:#222222;
     padding: 1pc;
     border-radius: 10pt;
+    white-space: normal;
+}
+pre {
+    font: inherit;
+    margin: 0;
+    padding: 0;
 }
 div.trTable {
     display: inline-block;
     margin: 1pc;
 }
-table.trTable {
-    max-width: 30pc;
-}
+/* table.trTable {
+} */
 #allTables {
     inline-size: min-content;
     white-space: nowrap;
+    font-family: serif;
+    font-size: large;
 }
 p {
     padding: 0;

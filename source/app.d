@@ -5,6 +5,7 @@ import std.path;
 import std.file;
 import std.stdio: File;
 import std.encoding;
+import std.stdio;
 
 import data: dumpVersion;
 import parsing;
@@ -41,8 +42,9 @@ void main(string[] args) {
             .formatHTML()
         // "output/aFile.html"
     );
+    writeln("created ", buildPath(outPath, outName));
     // import data.jp;
-    // outFile.write();
+    // outFile11.write();
 }
 
 
