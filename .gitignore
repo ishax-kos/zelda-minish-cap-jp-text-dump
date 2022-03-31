@@ -2,7 +2,6 @@
 docs.json
 __dummy.html
 docs/
-raw/
 /mc-dump-jp
 mc-dump-jp.so
 mc-dump-jp.dylib
@@ -15,5 +14,7 @@ mc-dump-jp-test-*
 *.obj
 *.lst
 test.*
-output/
-exclude/
+/raw/
+/output/
+/exclude/
+mc-dump-jp.pdb
