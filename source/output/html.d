@@ -29,11 +29,11 @@ String_t formatHTML(Table[] structuredData) {
                     "ul class=vMenu".tag(
                         structuredData.map!(
                             table => "li".tag(
-                                table.number.format!"a class=hideBar href=#t%s".tag(
+                                table.number.format!"a class=vMenu href=#t%s".tag(
                                     "h3".tag(table.name),
                                     "p class=hint".tag(table.description)
                                 )
-                            ) 
+                            )
                         )
                     )
                 )
@@ -48,17 +48,20 @@ String_t formatHTML(Table[] structuredData) {
     ).toStringHTML;
 }
 
-Tag tableToTag(Table t) {
-    uint i = 0;
-    return t.number.format!"div class=trTable id=t%s".tag(
-        "h3".tag(t.name.to!String_t),
-        "h4".tag(t.description.to!String_t),
+Tag tableToTag(Table table) {
+    uint t = 0;
+    return table.number.format!"div class=trTable id=table%s".tag(
+        "h3".tag(table.name.to!String_t),
+        "h4".tag(table.description.to!String_t),
         "table class=trTable".tag(
-            t.messages.map!(
-                (TextBox tb) => "tr".tag(
-                    "td".tag(format!"%d"(i++)),
-                    "td".msgToTag(tb.text)
-                )
+            table.messages.map!(
+                (TextBox tb) {
+                    uint m = 0;
+                    return "tr".tag(
+                        format!"td id=table%sm%s"(t,m++).tag(format!"%d"(t++)),
+                        "td".msgToTag(tb.text)
+                    );
+                }
                     // : "tr".tag(`("tr".tag("td".tag(format!"%d <hr>"(i++))))`w)
             )//.array
         )
@@ -158,12 +161,21 @@ string tagPalette(uint val) {
 Tag msgToTag(string tagName, ColoredMsg[] colorMsgArray) {
     import std.functional: compose;
     import std.uni: isWhite;
+    import std.algorithm: find;
 
     if (colorMsgArray.length == 0)
         return tag(tagName ~ " class=trNull","<hr>");
     else {
         String_t[] outmsg;
         foreach(colmsg; colorMsgArray) {
+            // foreach (match; matchAll!"🔎[0-9]{1,3},[0-9]{1,3}▶") {
+            //     auto rem = colmsg.find("🔎");
+            //     if (rem == []) break;
+            //     else {
+            //         rem.find
+            //     }
+            // }
+
             String_t outm;
                 if (colmsg.palette < 16) 
                     outm ~= colmsg.palette.format!"<span class=c%X>"();

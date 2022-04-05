@@ -7,7 +7,7 @@ import std.conv;
 import std.algorithm:map;
 import std.array: join;
 
-enum dumpVersion = [1, 3, 0];
+enum dumpVersion = [1, 3, 1];
 enum string dumpVersionf(char sep) = dumpVersion.map!(to!string).join(sep);
 
 

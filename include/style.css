@@ -1,62 +1,46 @@
 :root {
-    --sidebar-space: 10pc;
+    --sidebar-space: 20pc;
 }
 
 body {
     border: 0;
     margin: 0;
     background-color: #7F7F7F;
-    height: 100%;
-    overflow-y: hidden;
+    /* height: 100%; */
+    overflow-y: visible;
     overflow-x: hidden;
 }
 .page {
-    /* box-sizing: border-box; */
-    /* display: none; */
-    display: inline-block;
+    display: inline-flexbox;
     background-color: #FFF;
-    margin: 0;
-    margin-right: 0;
+    margin: auto;
+    width: auto;
+    /* calc(100% - (2pc var(--sidebar-space))); */
     margin-left: calc( var(--sidebar-space) + 1pc);
-    height: 100%;
-    overflow-y: scroll;
-    /* .5pc auto; */
-    /* max-width: none; */
     padding: 4pc;
 }
 
 
 .hideBarContainer {
     direction: rtl;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: scroll;
     background-color: #4287f57f;
     display: inline-block;
     height: 100vh;
-    position: fixed;
     vertical-align: top;
-    left: 0;
-    top: 0;
     font-size: smaller;
+    width: calc( var(--sidebar-space)); */
     /* text-align: right; */
-  }
-
-input + .hideBar {
-    width: var(--sidebar-space);
-    text-align: left;
-    bottom: 0;
-    margin: 0;
-    padding: 0;
-    /* display: inline-block; */
-    background-color: #888;
-    border-top-right-radius: 2pc;
-    border-bottom-right-radius: 2pc;
-    overflow-y: scroll;
-}
-input + .hideBar * {
-    padding: 0;
-    margin: 0;
 }
 
-input + .hideBar ul {
+div.hideBar {
+}
+
+ul.vMenu {
+    direction: ltr;
     width: inherit;
     margin: 0;
     padding: 1pc;
@@ -65,29 +49,34 @@ input + .hideBar ul {
     background-color: #444444;
     border-top-right-radius: 4pc;
     border-bottom-right-radius: 4pc;
-    height: max-content;
-  }
-
-  /* checkbox */
-input.hideBar { 
-    /* position: relative; */
-    /* top: 0; */
-    /* left: 100%; */
-    /* display: inline; */
-    width: 2pc;
-    height: 2pc;
 }
 
-.hideBarContainer a {
-    margin: 0;
+a.vMenu {
     color:inherit;
     text-decoration: none;
 }
 
-input:checked+.hideBar {
-    display: none;
-}
 
+/* input + .hideBar {
+    width: var(--sidebar-space);
+    text-align: left;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    background-color: #888;
+    border-top-right-radius: 2pc;
+    border-bottom-right-radius: 2pc;
+    overflow-y: scroll;
+}
+input + .hideBar * {
+    padding: 0;
+    margin: 0;
+} */
+
+
+
+/* ... */
 
 td.trMessage {
     width: max-content;
