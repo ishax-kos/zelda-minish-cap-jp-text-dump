@@ -1,10 +1,95 @@
+:root {
+    --sidebar-space: 20pc;
+}
+
+body {
+    border: 0;
+    margin: 0;
+    background-color: #7F7F7F;
+    /* height: 100%; */
+    overflow-y: visible;
+    overflow-x: hidden;
+}
+.page {
+    display: inline-flexbox;
+    background-color: #FFF;
+    margin: auto;
+    width: auto;
+    /* calc(100% - (2pc var(--sidebar-space))); */
+    margin-left: calc( var(--sidebar-space) + 1pc);
+    padding: 4pc;
+}
+
+
+.hideBarContainer {
+    direction: rtl;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: scroll;
+    background-color: #4287f57f;
+    display: inline-block;
+    height: 100vh;
+    vertical-align: top;
+    font-size: smaller;
+    width: calc( var(--sidebar-space)); */
+    /* text-align: right; */
+}
+
+div.hideBar {
+}
+
+ul.vMenu {
+    direction: ltr;
+    width: inherit;
+    margin: 0;
+    padding: 1pc;
+    list-style-type: none;
+    /* position: relative; */
+    background-color: #444444;
+    border-top-right-radius: 4pc;
+    border-bottom-right-radius: 4pc;
+}
+
+a.vMenu {
+    color:inherit;
+    text-decoration: none;
+}
+
+
+/* input + .hideBar {
+    width: var(--sidebar-space);
+    text-align: left;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    background-color: #888;
+    border-top-right-radius: 2pc;
+    border-bottom-right-radius: 2pc;
+    overflow-y: scroll;
+}
+input + .hideBar * {
+    padding: 0;
+    margin: 0;
+} */
+
+
+
+/* ... */
+
 td.trMessage {
-    max-width: 30pc;
+    width: max-content;
     color:white;
     background:#222222;
     padding: 1pc;
     border-radius: 10pt;
-    white-space: normal;
+    /* white-space: normal; */
+}
+hr {
+    height: 1pt;
+    border-width: 0pc;
+    background-color: #222222;
 }
 pre {
     font: inherit;
@@ -12,7 +97,8 @@ pre {
     padding: 0;
 }
 div.trTable {
-    display: inline-block;
+    width: max-content;
+    /* display: inline-block; */
     margin: 1pc;
 }
 /* table.trTable {
@@ -23,16 +109,12 @@ div.trTable {
     font-family: serif;
     font-size: large;
 }
-p {
-    padding: 0;
-    border: 0;
-}
 
 /** The first 4 appear in game, the 5th is
     in the debug messages, and the rest are 
     probably just undefined states. */
     .c0, .c8 {
-        /* color: white; */
+        color: #FFFFFF;
     }
     .c1, .c9 {
         color: #f54242;

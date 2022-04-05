@@ -7,109 +7,147 @@ import std.string;
 import std.algorithm: map, all;
 import std.array: array;
 import std.conv;
+import std.file;
 
 import types;
 import data;
 
-wstring formatHTML(Table[] structuredData) {
-    Tag[] doc;
-    doc ~= "html".tag(
+
+String_t formatHTML(Table[] structuredData) {
+    return 
+    "<!DOCTYPE html>\n" ~
+    "html".tag(
         "head".tag(
             "style".tag(
-                import("style.css").to!wstring
+                readText!String_t("include/style.css").to!String_t
             )
         ),
         "body".tag(
-            "p".tag(dumpVersion.to!wstring),
-            "div id=allTables".tag(
-                structuredData.map!(
-                    (Table t) {
-                        uint i = 0;
-                        return "div class=trTable".tag(
-                            "h3".tag(t.name.to!wstring),
-                            "h4".tag(t.description.to!wstring),
-                            "table class=trTable".tag(
-                                t.messages.map!(
-                                    (TextBox tb) => "tr".tag(
-                                        "td".tag(format!"%d"w(i++)),
-                                        "td class=trMessage".msgToTag(tb.text)
-                                    )
-                                        // : "tr".tag(`("tr".tag("td".tag(format!"%d <hr>"w(i++))))`w)
-                                )//.array11
+            "div class=hideBarContainer".tag(
+                // "<input class=hideBar type=checkbox>",
+                "div class=hideBar".tag(
+                    "ul class=vMenu".tag(
+                        structuredData.map!(
+                            table => "li".tag(
+                                table.number.format!"a class=vMenu href=#t%s".tag(
+                                    "h3".tag(table.name),
+                                    "p class=hint".tag(table.description)
+                                )
                             )
-                        );
-                    }
-                )//.array
+                        )
+                    )
+                )
+            ),
+            "div class=page".tag(
+                "p".tag(dumpVersionf!'.'.to!String_t),
+                "div id=allTables".tag(
+                    structuredData.map!tableToTag
+                )
             )
         )
-    );
-    
-    
-
-    return "<!DOCTYPE html>\n"w ~
-    doc.map!(toStringHTML).array.join('\n');
+    ).toStringHTML;
 }
 
+Tag tableToTag(Table table) {
+    uint t = 0;
+    return table.number.format!"div class=trTable id=table%s".tag(
+        "h3".tag(table.name.to!String_t),
+        "h4".tag(table.description.to!String_t),
+        "table class=trTable".tag(
+            table.messages.map!(
+                (TextBox tb) {
+                    uint m = 0;
+                    return "tr".tag(
+                        format!"td id=table%sm%s"(t,m++).tag(format!"%d"(t++)),
+                        "td".msgToTag(tb.text)
+                    );
+                }
+                    // : "tr".tag(`("tr".tag("td".tag(format!"%d <hr>"(i++))))`w)
+            )//.array
+        )
+    );
+}
 
+ 
 struct Tag {
     string tag;
     Contents_t[] contents;
 }
-wstring toStringHTML(Tag thisTag) {
+
+
+String_t toStringHTML(Tag thisTag) {
     with (thisTag) {
         static indent = 0;
         
-        wstring ind() {return " "w.repeat(4*indent).join;}
+        String_t ind() {return " ".repeat(4*indent).join;}
 
-        wstring outStr = ind ~ format!"<%s>\n"w(tag);
+        String_t outStr = ind ~ format!"<%s>\n"(tag);
         outStr ~= contents.map!((a) {
             indent += 1; scope(exit) indent -= 1; 
             return a.match!(
                 (Tag t) => t.toStringHTML,
-                (wstring ws) => ws.lineSplitter.join("\n" ~ ind),
+                (String_t ws) => ws.lineSplitter.map!(a =>ind ~ a).join('\n'),
                 (Pre p) => "<pre>"~p.text~"</pre>"
 
             );
         }).join('\n');
-        outStr ~= "\n" ~ ind ~ format!"</%s>"w(tag.split[0]);
+        outStr ~= "\n" ~ ind ~ format!"</%s>"(tag.split[0]);
         return outStr;
     }
 }
 
-// static assert(staticIndexOf!(wstring, TemplateArgsOf!Contents_t) != -1);
+
+
+import std.range: isInputRange, ElementType;
+
+enum isContentsType(T) = __traits(compiles, {
+    T t;
+    Contents_t(t);
+});
+//staticIndexOf!(T, TemplateArgsOf!Contents_t) != -1;
+enum isContentsRange(T) = 
+    isInputRange!T && 
+    isContentsType!(ElementType!T);
+// enum isWhatever(T) = isContentsType!T || isContentsRange!T;
+
+
+unittest {
+    import std.stdio;
+    assert(isContentsType!Pre);
+    assert(isContentsType!String_t);
+    assert(isContentsType!Tag);
+    assert(!isContentsType!int);
+}
+
 
 import std.traits: TemplateArgsOf;
 import std.meta;
 pragma(inline)
 Tag tag(T...)(string name, T mixedContents)
-// if (staticIndexOf!(T, TemplateArgsOf!Contents_t) != -1)
+if (allSatisfy!(templateOr!(isContentsType,isContentsRange), T))
 {
-    import std.range: isInputRange, ElementType;
 
     Contents_t[] contents;
     
 
     foreach (c; mixedContents) {
         alias C = typeof(c);
-        static if (staticIndexOf!(C, TemplateArgsOf!Contents_t) != -1) 
+        static if (isContentsType!C)
             contents ~= Contents_t(c);
-        else {
-            static assert (isInputRange!C);
-            static assert (staticIndexOf!(ElementType!C, TemplateArgsOf!Contents_t) != -1);
+        else static if (isContentsRange!C)
             foreach (c_; c)
                 contents ~= Contents_t(c_);
-            
-        }
+        else assert(0);
     }
 
     return Tag(name, contents);
 }
 
-alias Contents_t = SumType!(Tag, wstring, Pre);
+alias Contents_t = SumType!(Tag, String_t, Pre);
 
 
 struct Pre {
-    wstring text;
+    String_t text;
 }
 
 
@@ -123,22 +161,31 @@ string tagPalette(uint val) {
 Tag msgToTag(string tagName, ColoredMsg[] colorMsgArray) {
     import std.functional: compose;
     import std.uni: isWhite;
+    import std.algorithm: find;
 
+    if (colorMsgArray.length == 0)
+        return tag(tagName ~ " class=trNull","<hr>");
+    else {
+        String_t[] outmsg;
+        foreach(colmsg; colorMsgArray) {
+            // foreach (match; matchAll!"🔎[0-9]{1,3},[0-9]{1,3}▶") {
+            //     auto rem = colmsg.find("🔎");
+            //     if (rem == []) break;
+            //     else {
+            //         rem.find
+            //     }
+            // }
 
-    if (colorMsgArray.length == 0) return tagName.split[0].tag(Pre("<hr>"w));
-
-    wstring outmsg;
-    foreach(colmsg; colorMsgArray) {
-        if (colmsg.text == "") {}
-        else if (colmsg.text.all!isWhite) {
-            outmsg ~= colmsg.text;
+            String_t outm;
+                if (colmsg.palette < 16) 
+                    outm ~= colmsg.palette.format!"<span class=c%X>"();
+                else 
+                    outm ~= "<span class=cERROR>";
+                outm ~= colmsg.text;
+                outm ~= "</span>";
+            // }
+            outmsg ~= outm;
         }
-        else {
-            outmsg ~= colmsg.palette.format!"<span class=c%X>"w();
-            outmsg ~= colmsg.text;
-            outmsg ~= "</span>"w;
-        }
-        
+        return tag(tagName ~ " class=trMessage", Pre(outmsg.join.strip));
     }
-    return tagName.tag(Pre(outmsg.strip));
 }
