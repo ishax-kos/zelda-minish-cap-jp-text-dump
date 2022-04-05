@@ -7,7 +7,7 @@ import std.stdio: File;
 import std.encoding;
 import std.stdio;
 
-import data: dumpVersion;
+import data;
 import parsing;
 import output;
 
@@ -22,10 +22,8 @@ void main(string[] args) {
             ~"_text"; 
     }
 
-    
-    
     /// add version to file name
-    outName ~= dumpVersion~".html";
+    outName ~= dumpVersionf!'-'~".html";
 
     string outPath = args[0].dirName.buildPath("output");
     if (!outPath.exists) mkdir(outPath);
@@ -38,7 +36,8 @@ void main(string[] args) {
     /// This is a "Byte order mark".
     // outFile.rawWrite(bomTable[BOM.utf16le].sequence);
     outFile.write(
-        parseTables(inputFile)
+        inputFile
+            .parseTables()
             .formatHTML()
         // "output/aFile.html"
     );

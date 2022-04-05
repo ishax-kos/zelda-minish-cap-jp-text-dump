@@ -3,6 +3,11 @@ module types;
 import std.sumtype;
 public import std.sumtype: match;
 
+
+alias String_t = string;
+alias Char_t = char;
+
+
 struct Table {
     string name; 
     string description;
@@ -17,10 +22,10 @@ struct TextBox {
 }
 
 
-wstring plainText(ColoredMsg[] text) {
+String_t plainText(ColoredMsg[] text) {
     import std.algorithm: fold;
     import std.array: array;
-    wstring accum;
+    String_t accum;
     foreach (ColoredMsg msg; text) { accum ~= msg.text; }
     return accum;
 }
@@ -28,7 +33,7 @@ wstring plainText(ColoredMsg[] text) {
 
 struct ColoredMsg {
     ubyte palette;
-    wstring text;
+    String_t text;
 }
 
 

@@ -35,6 +35,7 @@ Table[] parseTables(MmFile romFile) {
         table.name = format!"Table %d"(tableNum);
         if (tableNum < tableDescriptions.length)
             table.description = tableDescriptions[tableNum];
+        table.number = cast(uint) tableNum;
 
         foreach (messageNum; 0..messageCount) {
             immutable stringOffset = romFile.take!uint(messageNum*4 + tableOffset) + tableOffset;
@@ -48,17 +49,19 @@ Table[] parseTables(MmFile romFile) {
     return tableList;
 }
 
+import std.range.primitives;
 
-
-ColoredMsg[] parseString(MmFile romFile, uint offset) {
+ColoredMsg[] parseString(T)(T romFile, uint offset)
+if (is(typeof(romFile[0]) == ubyte)) {
     
+    if (romFile[offset] == 0) return []; 
     ColoredMsg[] message = [ColoredMsg()];
 
     /// Adds text to the last ColoredMsg in the array.
-    void addString(wstring text) {
+    void addString(String_t text) {
         message[$-1].text ~= text;
     }
-    void addChar(wchar cha) {
+    void addChar(String_t cha) {
         message[$-1].text ~= cha;
     }
 
@@ -96,7 +99,7 @@ ColoredMsg[] parseString(MmFile romFile, uint offset) {
                 else {
                     ubyte b2 = romFile[i++]; //3
                     addString (
-                        format!"🔎%d,%d▶"w(b1,b2)
+                        format!"🔎%d,%d▶"(b1,b2)
                     );
                 }
                 break;
@@ -122,13 +125,13 @@ ColoredMsg[] parseString(MmFile romFile, uint offset) {
 
             case 0x0B: /// Wind hylian
                 ubyte value2 = romFile[i++];
-                addString (value2.format!"#%02X"w());
+                addString (value2.format!"#%02X"());
                 break;
 
             case 0x0C: /// Button symbols
                 uint value2 = mapping_0C + romFile[i++];
                 if (value2 >= glyphs2x2.length)
-                    addString (format!"[%02X]"w(value2 - glyphs2x2.length));
+                    addString (format!"[%02X]"(value2 - glyphs2x2.length));
                 else
                     addChar (glyphs2x2[value2]);
                 break;
@@ -140,7 +143,7 @@ ColoredMsg[] parseString(MmFile romFile, uint offset) {
             case 0x0E: /// Kanji extra
                 uint value2 = mapping_0E + romFile[i++];
                 if (value2 >= glyphs2x2.length)
-                    addString (format!"[%02X]"w(value2 - glyphs2x2.length));
+                    addString (format!"[%02X]"(value2 - glyphs2x2.length));
                 else 
                     addChar (glyphs2x2[value2]);
                 break;
@@ -148,8 +151,8 @@ ColoredMsg[] parseString(MmFile romFile, uint offset) {
             case 0x0F: /// Punctuation
                 ubyte value2 = romFile[i++];
                 if (value2 >= mapping1x2_0F.length)
-                    addString (value2.format!"[INVALID OFFSET %02X]"w());
-                else if (mapping1x2_0F[value2] == '\0')
+                    addString (value2.format!"[INVALID OFFSET %02X]"());
+                else if (mapping1x2_0F[value2] == "\0")
                     addString ("[BLANK_0F]");
                 else
                     addChar (mapping1x2_0F[value2]);
@@ -173,12 +176,9 @@ unittest {
     import std.mmfile;
     import std.encoding: BOM, bomTable;
     MmFile file = new MmFile("raw/rom.gba");
-    File outputFile = File("output/test.txt", "wb");
+
+    assert(parseString([ubyte(0)], 0) == []);
     
     auto data = parseTables(file);
-    outputFile.rawWrite(bomTable[BOM.utf16le].sequence);
-    foreach(table; data) foreach(msg; table.messages) {
-        outputFile.rawWrite(msg.text.plainText);
-    }
     
 }

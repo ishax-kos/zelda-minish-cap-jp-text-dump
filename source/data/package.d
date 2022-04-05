@@ -3,8 +3,12 @@ module data;
 public import data.jp;
 public import data.headings;
 
+import std.conv;
+import std.algorithm:map;
+import std.array: join;
 
-enum dumpVersion = "1.3.0";
+enum dumpVersion = [1, 3, 0];
+enum string dumpVersionf(char sep) = dumpVersion.map!(to!string).join(sep);
 
 
 wchar opCode(ubyte id, ubyte data = 0) {
