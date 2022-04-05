@@ -50,7 +50,7 @@ String_t formatHTML(Table[] structuredData) {
 
 Tag tableToTag(Table table) {
     uint t = 0;
-    return table.number.format!"div class=trTable id=table%s".tag(
+    return table.number.format!"div class=trTable id=t%s".tag(
         "h3".tag(table.name.to!String_t),
         "h4".tag(table.description.to!String_t),
         "table class=trTable".tag(
@@ -58,7 +58,7 @@ Tag tableToTag(Table table) {
                 (TextBox tb) {
                     uint m = 0;
                     return "tr".tag(
-                        format!"td id=table%sm%s"(t,m++).tag(format!"%d"(t++)),
+                        format!"td id=t%sm%s"(t,m++).tag(format!"%d"(t++)),
                         "td".msgToTag(tb.text)
                     );
                 }
