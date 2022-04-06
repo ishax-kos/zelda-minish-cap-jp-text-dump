@@ -3,11 +3,12 @@
 }
 
 body {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     border: 0;
     margin: 0;
-    background-color: #7F7F7F;
+    background-color: #000;
     /* height: 100%; */
-    overflow-y: visible;
+    /* overflow-y: hidden; */
     overflow-x: hidden;
 }
 .page {
@@ -15,6 +16,7 @@ body {
     background-color: #FFF;
     margin: auto;
     width: auto;
+    overflow-y: visible;
     /* calc(100% - (2pc var(--sidebar-space))); */
     margin-left: calc( var(--sidebar-space) + 1pc);
     padding: 4pc;
@@ -27,7 +29,6 @@ body {
     left: 0;
     top: 0;
     overflow-y: scroll;
-    background-color: #4287f57f;
     display: inline-block;
     height: 100vh;
     vertical-align: top;
@@ -43,10 +44,10 @@ ul.vMenu {
     direction: ltr;
     width: inherit;
     margin: 0;
-    padding: 1pc;
+    padding: 1pc 2pc 1pc 1pc;
     list-style-type: none;
     /* position: relative; */
-    background-color: #444444;
+    background-color: #BBB;
     border-top-right-radius: 4pc;
     border-bottom-right-radius: 4pc;
 }
@@ -55,37 +56,23 @@ a.vMenu {
     color:inherit;
     text-decoration: none;
 }
-
-
-/* input + .hideBar {
-    width: var(--sidebar-space);
-    text-align: left;
-    bottom: 0;
+.vMenu p, 
+.vMenu h3 {
     margin: 0;
-    padding: 0;
-    display: inline-block;
-    background-color: #888;
-    border-top-right-radius: 2pc;
-    border-bottom-right-radius: 2pc;
-    overflow-y: scroll;
 }
-input + .hideBar * {
-    padding: 0;
-    margin: 0;
-} */
 
-
-
-/* ... */
 
 td.trMessage {
-    width: max-content;
+    /* width: max-content; */
     color:white;
-    background:#222222;
+    background-color: #222222;
     padding: 1pc;
     border-radius: 10pt;
     /* white-space: normal; */
 }
+/* td.trNull {
+    border: 1pt;
+} */
 hr {
     height: 1pt;
     border-width: 0pc;
@@ -96,18 +83,32 @@ pre {
     margin: 0;
     padding: 0;
 }
-div.trTable {
+td.trTable {
     width: max-content;
     /* display: inline-block; */
     margin: 1pc;
 }
-/* table.trTable {
-} */
+th.trTable div {
+    background-color: #222222;
+    color: white;
+    text-align: center;
+    border-radius: 4pc;
+    padding: 0.5pc;
+}
+th.trTable {
+    text-align: left;
+    vertical-align: text-top;
+    text-indent: 0;
+}
 #allTables {
-    inline-size: min-content;
-    white-space: nowrap;
-    font-family: serif;
-    font-size: large;
+    /* inline-size: min-content; */
+    /* white-space: nowrap; */
+    /* font-size: large; */
+}
+
+a.linkNoColor {
+    color: inherit;
+    text-decoration: inherit;
 }
 
 /** The first 4 appear in game, the 5th is

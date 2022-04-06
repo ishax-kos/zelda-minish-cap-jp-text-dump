@@ -28,10 +28,10 @@ String_t formatHTML(Table[] structuredData) {
                 "div class=hideBar".tag(
                     "ul class=vMenu".tag(
                         structuredData.map!(
-                            table => "li".tag(
+                            table => "li class=vMenu".tag(
                                 table.number.format!"a class=vMenu href=#t%s".tag(
-                                    "h3".tag(table.name),
-                                    "p class=hint".tag(table.description)
+                                    "h3 class=vMenu".tag(table.name),
+                                    "p class=vMenu".tag(table.description)
                                 )
                             )
                         )
@@ -49,17 +49,18 @@ String_t formatHTML(Table[] structuredData) {
 }
 
 Tag tableToTag(Table table) {
-    uint t = 0;
+    uint m = 0;
     return table.number.format!"div class=trTable id=t%s".tag(
         "h3".tag(table.name.to!String_t),
         "h4".tag(table.description.to!String_t),
         "table class=trTable".tag(
             table.messages.map!(
-                (TextBox tb) {
-                    uint m = 0;
+                (MessageEntry tb) {
                     return "tr".tag(
-                        format!"td id=t%sm%s"(t,m++).tag(format!"%d"(t++)),
-                        "td".msgToTag(tb.text)
+                        format!"th class=trTable id=t%dm%d"(table.number,m).tag(
+                            "div".tag(format!"%d"(m++))
+                        ),
+                        msgToTag("td", tb.text)
                     );
                 }
                     // : "tr".tag(`("tr".tag("td".tag(format!"%d <hr>"(i++))))`w)
@@ -158,7 +159,7 @@ string tagPalette(uint val) {
 }
 
 
-Tag msgToTag(string tagName, ColoredMsg[] colorMsgArray) {
+Tag msgToTag(string tagName, ColorText[] colorMsgArray) {
     import std.functional: compose;
     import std.uni: isWhite;
     import std.algorithm: find;
@@ -168,24 +169,32 @@ Tag msgToTag(string tagName, ColoredMsg[] colorMsgArray) {
     else {
         String_t[] outmsg;
         foreach(colmsg; colorMsgArray) {
-            // foreach (match; matchAll!"🔎[0-9]{1,3},[0-9]{1,3}▶") {
-            //     auto rem = colmsg.find("🔎");
-            //     if (rem == []) break;
-            //     else {
-            //         rem.find
-            //     }
-            // }
-
             String_t outm;
-                if (colmsg.palette < 16) 
-                    outm ~= colmsg.palette.format!"<span class=c%X>"();
-                else 
-                    outm ~= "<span class=cERROR>";
-                outm ~= colmsg.text;
-                outm ~= "</span>";
-            // }
+            if (colmsg.palette < 16) 
+                outm ~= colmsg.palette.format!"<span class=c%X>"();
+            else 
+                outm ~= "<span class=cERROR>";
+            outm ~= colmsg.text.colorTextToHTML();
+            outm ~= "</span>";
             outmsg ~= outm;
         }
         return tag(tagName ~ " class=trMessage", Pre(outmsg.join.strip));
     }
+}
+
+String_t colorTextToHTML(Text[] arr) {
+    String_t outmsg;
+    foreach (item; arr) {
+        outmsg ~= item.match!(
+            (string s) => s,
+            (TextOption texop) => (texop == TextOption.close) 
+                ? "<a>❌▶</a>"
+                : (
+                    format!"<a href=#t%dm%d class=linkNoColor>"(texop.table,texop.message)
+                    ~ format!"🔎%d,%d▶"(texop.table,texop.message)
+                    ~ "</a>"
+                )
+        );
+    }
+    return outmsg;
 }
