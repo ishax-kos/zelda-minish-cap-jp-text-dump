@@ -23,7 +23,7 @@ void main(string[] args) {
     }
 
     /// add version to file name
-    outName ~= dumpVersionf!'-'~".html";
+    outName ~= dumpVersionf!'-';
 
     string outPath = args[0].dirName.buildPath("output");
     if (!outPath.exists) mkdir(outPath);
@@ -31,17 +31,19 @@ void main(string[] args) {
 
     MmFile inputFile = new MmFile(inputPath);
 
-    File outFile = File(buildPath(outPath, outName), "wb");
+    string fullOutputPath = buildPath(outPath, outName~".csv");
+
+    File outFile = File(fullOutputPath, "wb");
     
     /// This is a "Byte order mark".
     // outFile.rawWrite(bomTable[BOM.utf16le].sequence);
     outFile.write(
         inputFile
             .parseTables()
-            .formatHTML()
+            .formatCSV()
         // "output/aFile.html"
     );
-    writeln("created ", buildPath(outPath, outName));
+    writeln("created ", fullOutputPath);
     // import data.jp;
     // outFile11.write();
 }

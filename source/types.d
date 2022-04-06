@@ -2,10 +2,11 @@ module types;
 
 import std.sumtype;
 public import std.sumtype: match;
-
+import std.conv;
 
 alias String_t = string;
-alias Char_t = char;
+alias toStrT = to!String_t;
+// alias Char_t = char;
 
 
 struct Table {
@@ -65,7 +66,7 @@ String_t plainText(ColorText[] text) {
         foreach (Text msg; colT.text) {
             accum ~= msg.match!(
                 (String_t s) => s,
-                (TextOption t) => cast(String_t)""
+                (TextOption t) => "▶".to!String_t
             );
         }
     }

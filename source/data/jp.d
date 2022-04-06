@@ -1,7 +1,7 @@
 module data.jp;
 
 import types;
-
+import std.conv: to;
 
 uint textAddress = 0x9B1A30;
 
@@ -26,7 +26,7 @@ immutable String_t[] mapping1x2_Base = [
     "ピ", "ぷ", "プ", "ぺ", "ペ", "ぽ", "ポ", "ウ", "か", "カ", "き", "キ", "く", "ク", "け", "ケ",
     "こ", "コ", "さ", "サ", "し", "シ", "す", "ス", "せ", "セ", "そ", "ソ", "た", "タ", "ち", "チ",
     "つ", "ツ", "て", "テ", "と", "ト", "は", "ハ", "ひ", "ヒ", "ふ", "フ", "へ", "ヘ", "ほ", "ホ",
-];
+].to!(String_t[]);
 
 immutable String_t[] mapping1x2_0F = [
     /// Punctuation 0F 
@@ -44,7 +44,7 @@ immutable String_t[] mapping1x2_0F = [
     "ú", "û", "ü", "ý", "þ", "ÿ",
 
     // "　", "　", "　", "　", "　", "　", "　", "　", "　", "　", "　", "　", "　", "　", "　", "　", 
-];
+].to!(String_t[]);
 
 immutable String_t[] glyphs2x2 = [
     /// Kanji 0D
@@ -98,19 +98,19 @@ immutable String_t[] glyphs2x2 = [
     /// Button symbols 0C      
     "Ⓐ", "Ⓑ", "Ⓛ", "Ⓡ", "⮝", "⮟", "⮜", "⮞",
     "✜",
-]; 
+].to!(String_t[]); 
 
 // immutable String_t[] glyphs2x2 = glyphs2x2_0D~glyphs2x2_0E~glyphs2x2_0C;
 
 import std.algorithm.searching: countUntil;
 int mapping_0D = 0;
-int mapping_0E = glyphs2x2.countUntil("聞");
-int mapping_0C = glyphs2x2.countUntil("Ⓐ");
+int mapping_0E = glyphs2x2.countUntil("聞".to!(String_t));
+int mapping_0C = glyphs2x2.countUntil("Ⓐ".to!(String_t));
 
 immutable String_t[86] windHylian;
 
 
-string[] tableDescriptions = [
+String_t[] tableDescriptions = [
     /// 0
     "Save, quit, and sleep menus.",
     /// 1
@@ -127,4 +127,4 @@ string[] tableDescriptions = [
     "Figurine descriptions.",
     "Debug messages.",
     ""
-];
+].to!(String_t[]);
