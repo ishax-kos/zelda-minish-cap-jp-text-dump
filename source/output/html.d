@@ -13,7 +13,7 @@ import types;
 import data;
 
 
-String_t formatHTML(Table[] structuredData) {
+String_t formatHTML (Table[] structuredData) {
     return 
     "<!DOCTYPE html>\n" ~
     "html".tag(

@@ -19,5 +19,5 @@ String_t formatCSV (Table[] structuredData) {
             }
             else {return "";}
         }).join()
-    ).join("\n");
+    ).join();
 }

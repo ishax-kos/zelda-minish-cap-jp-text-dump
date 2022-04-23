@@ -78,7 +78,8 @@ if (is(typeof(romFile[0]) == ubyte)) {
                 return message;
 
             case 0x01:
-                return message;
+                i += 1;
+                break;
 
             case 0x02: /// Set color
                 ubyte color = romFile[i++];
