@@ -39,7 +39,7 @@ Table[] parseTables(MmFile romFile) {
 
         foreach (messageNum; 0..messageCount) {
             immutable stringOffset = romFile.take!uint(messageNum*4 + tableOffset) + tableOffset;
-            table.messages ~= TextBox( 
+            table.messages ~= MessageEntry( 
                 messageNum, 
                 parseString(romFile, stringOffset) 
             );
@@ -51,37 +51,39 @@ Table[] parseTables(MmFile romFile) {
 
 import std.range.primitives;
 
-ColoredMsg[] parseString(T)(T romFile, uint offset)
+ColorText[] parseString(T)(T romFile, uint offset)
 if (is(typeof(romFile[0]) == ubyte)) {
     
     if (romFile[offset] == 0) return []; 
-    ColoredMsg[] message = [ColoredMsg()];
+    ColorText[] message = [ColorText()];
 
     /// Adds text to the last ColoredMsg in the array.
     void addString(String_t text) {
-        message[$-1].text ~= text;
-    }
-    void addChar(String_t cha) {
-        message[$-1].text ~= cha;
+        message[$-1].append(text);
     }
 
     ulong i = offset;
     
     foreach (_; 0..MAX_LENGTH) {
-        if (i >= romFile.length) break;
+        // writeln(_);
+        if (i >= romFile.length) {
+            addString ("%%% End of file reached. Something went wrong. ###");
+            return message;
+        }
         if (romFile[i] >= 16) {
-            addChar (mapping1x2_Base[romFile[i++]]);
+            addString (mapping1x2_Base[romFile[i++]]);
         }
         else final switch (romFile[i++]) {
             case 0x00: /// End
                 return message;
 
             case 0x01:
-                return message;
+                i += 1;
+                break;
 
             case 0x02: /// Set color
                 ubyte color = romFile[i++];
-                message ~= ColoredMsg(color, "");
+                message ~= ColorText(color, "");
                 break;
 
             case 0x03: /// Play sound?
@@ -95,12 +97,10 @@ if (is(typeof(romFile[0]) == ubyte)) {
             case 0x05: /// Choice
                 ubyte b1 = romFile[i++];
                 if (b1 == 0xFF)
-                    addString ("❌▶");
+                    message[$-1].text ~= Text(TextOption.close);
                 else {
                     ubyte b2 = romFile[i++]; //3
-                    addString (
-                        format!"🔎%d,%d▶"(b1,b2)
-                    );
+                    message[$-1].text ~= Text(TextOption(b1, b2));
                 }
                 break;
 
@@ -133,11 +133,11 @@ if (is(typeof(romFile[0]) == ubyte)) {
                 if (value2 >= glyphs2x2.length)
                     addString (format!"[%02X]"(value2 - glyphs2x2.length));
                 else
-                    addChar (glyphs2x2[value2]);
+                    addString (glyphs2x2[value2]);
                 break;
 
             case 0x0D: /// Kanji
-                addChar (glyphs2x2[romFile[i++]]);
+                addString (glyphs2x2[romFile[i++]]);
                 break;
 
             case 0x0E: /// Kanji extra
@@ -145,7 +145,7 @@ if (is(typeof(romFile[0]) == ubyte)) {
                 if (value2 >= glyphs2x2.length)
                     addString (format!"[%02X]"(value2 - glyphs2x2.length));
                 else 
-                    addChar (glyphs2x2[value2]);
+                    addString (glyphs2x2[value2]);
                 break;
 
             case 0x0F: /// Punctuation
@@ -155,7 +155,7 @@ if (is(typeof(romFile[0]) == ubyte)) {
                 else if (mapping1x2_0F[value2] == "\0")
                     addString ("[BLANK_0F]");
                 else
-                    addChar (mapping1x2_0F[value2]);
+                    addString (mapping1x2_0F[value2]);
                 break;
         }
     }
@@ -173,12 +173,13 @@ T take(T)(MmFile file, ulong offset) {
 
 
 unittest {
-    import std.mmfile;
-    import std.encoding: BOM, bomTable;
-    MmFile file = new MmFile("raw/rom.gba");
-
-    assert(parseString([ubyte(0)], 0) == []);
+    import std.conv;
+    import std.file;
+    import std.stdio;
+    auto result = parseString([ubyte(16), ubyte(17), ubyte(18), ubyte(0)], 0);
+    std.file.write("test.result.txt", result.plainText);
+    stdout.writeln(result);
+    assert(result.plainText == "あアい", result.length.to!string);
     
-    auto data = parseTables(file);
     
 }

@@ -10,20 +10,37 @@ import std.stdio;
 import data;
 import parsing;
 import output;
+import types;
 
  
 void main(string[] args) {
     string inputPath = "raw/rom.gba";
     string outName = "mcTextDump";
-    
+    string outputType = "html";
     if (args.length >= 2) {
         inputPath = args[1];
         outName = inputPath.baseName.stripExtension
             ~"_text"; 
     }
+    if (args.length >= 3) {
+        outputType = args[2];
+        outName = inputPath.baseName.stripExtension
+            ~"_text"; 
+    }
 
+
+     auto formatFunc = () {
+        final switch (outputType) {
+            case "html":
+                outName ~= dumpVersionf!'-' ~ "." ~ outputType;
+                return &formatHTML;
+            case "csv":
+                outName ~= dumpVersionf!'-' ~ "." ~ outputType;
+                return &formatCSV;
+        }
+    }();
     /// add version to file name
-    outName ~= dumpVersionf!'-'~".html";
+    
 
     string outPath = args[0].dirName.buildPath("output");
     if (!outPath.exists) mkdir(outPath);
@@ -31,17 +48,17 @@ void main(string[] args) {
 
     MmFile inputFile = new MmFile(inputPath);
 
-    File outFile = File(buildPath(outPath, outName), "wb");
+    string fullOutputPath = buildPath(outPath, outName);
+
+    File outFile = File(fullOutputPath, "wb");
     
     /// This is a "Byte order mark".
     // outFile.rawWrite(bomTable[BOM.utf16le].sequence);
     outFile.write(
-        inputFile
-            .parseTables()
-            .formatHTML()
+        formatFunc(inputFile.parseTables())
         // "output/aFile.html"
     );
-    writeln("created ", buildPath(outPath, outName));
+    writeln("created ", fullOutputPath);
     // import data.jp;
     // outFile11.write();
 }

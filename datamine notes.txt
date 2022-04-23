@@ -11,7 +11,7 @@ English ver: 9B1A30 en
     Starting the text with 00 will cause no box to be drawn. Game waits for user input as if a box was there.
 
 01 Not clear.
-    Seems identical in behavior to 00.
+    Seems identical in behavior to 00. NOPE. Consumes at least one additional character
 
 02 Set the color according to the next byte.
     00 white/default
